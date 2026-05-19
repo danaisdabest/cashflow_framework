@@ -1,0 +1,12 @@
+services:
+  dev:
+    build: .
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+      - ./examples:/app/examples
+      - ./cache:/app/cache
+    working_dir: /app
+    command: bash
+    stdin_open: true
+    tty: true
