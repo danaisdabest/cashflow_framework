@@ -28,16 +28,22 @@ class BaseNodeInput(ABC, BaseModel):
             if isinstance(v, BaseNode):
                 hash += v.get_hash()
             elif isinstance(v, list) or isinstance(v, tuple):
-                types = set([type(item) for item in v])
-                if len(types) > 1 or types[0] != BaseNode:
-                    raise ValueError(F"Weird input type ..... {types}")
-                for item in v:
-                    hash += item.get_hash()
-            elif isinstance(v, int) or isinstance(v, float) or isinstance(v, str) or isinstance(v, bool):
+                types = list(set([type(item) for item in v]))
+                if len(types) > 1:
+                    raise ValueError(f"Cant have multiple types in a list: {types}")
+                if types[0] == BaseNode:
+                    for item in v:
+                        hash += item.get_hash()
+                elif types[0] in [int, float, str, bool]:
+                    # compute a hash of the list
+                    hash += str(v)
+                else:
+                    raise ValueError(f"Unsupported input type cannot be hashed: {types[0]}")
+            elif type(v) in [int, float, str, bool]:
                 hash += str(v)
             else:
                 raise ValueError(f"Unsupported input type cannot be hashed: {type(v)}")
-        return hashlib.sha256(hash.encode()).hexdigest()
+        return hashlib.sha256(hash.encode()).hexdigest()[:10]
 
 
 class BaseNodeOutput(ABC,BaseModel):

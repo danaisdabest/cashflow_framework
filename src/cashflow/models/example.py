@@ -130,7 +130,7 @@ class RevenueInputNode(BaseRecordsNode, ComputationNodeMixin):
         revenue_output: list[float]
 
     def _compute_result(self) -> Output:
-        return self.Output(revenue_output=[float(x) for x in self.input.revenue_input])
+        return self.Output(revenue_output=[float(x)+111 for x in self.input.revenue_input])
 
 
 class ExpenseInputNode(BaseRecordsNode, ComputationNodeMixin):
@@ -143,7 +143,7 @@ class ExpenseInputNode(BaseRecordsNode, ComputationNodeMixin):
     def _compute_result(self) -> Output:
         if any([x>0 for x in self.input.expense_input]):
             raise ValueError("Expenses cannot be positive")
-        return self.Output(expense_output=[float(x) for x in self.input.expense_input])
+        return self.Output(expense_output=[float(x)+222 for x in self.input.expense_input])
 
 
 class NodeThatAddsRevenueAndExpenses(BaseRecordsNode, ComputationNodeMixin):
@@ -177,11 +177,17 @@ class RevenueExpenseCashflowModel(BaseCashflowModel):
     @computed_field
     @cached_property
     def _nodes(self) -> Nodes:
-        revenue_input_node = RevenueInputNode(cache_layer=self._cache_layer, input=RevenueInputNode.Input(revenue_input=[100, 200, 300]))
-        expense_input_node = ExpenseInputNode(cache_layer=self._cache_layer, input=ExpenseInputNode.Input(expense_input=[-50, -100, -150]))
+        revenue_input_node = RevenueInputNode(
+            cache_layer=self._cache_layer, 
+            input=RevenueInputNode.Input(revenue_input=[100, 200, 300]))
+        expense_input_node = ExpenseInputNode(
+            cache_layer=self._cache_layer, 
+            input=ExpenseInputNode.Input(expense_input=[-50, -100, -150]))
         node_that_adds_revenue_and_expenses = NodeThatAddsRevenueAndExpenses(
             cache_layer=self._cache_layer, 
-            input=NodeThatAddsRevenueAndExpenses.Input(revenue_input_node=revenue_input_node, expense_input_node=expense_input_node))
+            input=NodeThatAddsRevenueAndExpenses.Input(
+                revenue_input_node=revenue_input_node, 
+                expense_input_node=expense_input_node))
         return self.Nodes(
             revenue_input_node=revenue_input_node, 
             expense_input_node=expense_input_node, 
@@ -191,8 +197,8 @@ class RevenueExpenseCashflowModel(BaseCashflowModel):
         from cashflow.viz.dag_mermaid import model_to_mermaid
 
         print("About to print my results!!!")
-        for k in [getattr(self._nodes, name).get() for name in self._nodes.model_fields]:
-            print(k)
+        print(f"adding node = {self._nodes.node_that_adds_revenue_and_expenses.get()}")
+        print(f"nodes that this came from = {self._nodes.node_that_adds_revenue_and_expenses.input}")
         print("Done printing my results!!!")
 
         print(model_to_mermaid(self))

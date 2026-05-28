@@ -60,11 +60,11 @@ def _build_registry(nodes: BaseModel) -> dict[int, tuple[str, str]]:
         v = getattr(nodes, field_name, None)
         if isinstance(v, BaseNode):
             node_hash = v.get_hash()
-            node_id = _sanitize_mermaid_id(field_name) + "_" + node_hash[:]+ "..." + node_hash[-5:]
+            node_id = _sanitize_mermaid_id(field_name) + "_" + node_hash
             head = f"{field_name}: {node_hash}"
             if v.input_node_hashes:
-                lines = "          input_node_hashes: \n" + "\n".join(
-                    f"             {h_name}: {h_val}" for h_name, h_val in v.input_node_hashes.items()
+                lines = "input_node_hashes: \n" + "\n".join(
+                    f"    {h_name}: {h_val}" for h_name, h_val in v.input_node_hashes.items()
                 )
                 label = f"{head}\n (\n{lines}\n)"
             else:
