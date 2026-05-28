@@ -1,6 +1,6 @@
 # cashflow
 
-Auditable, content-addressed cashflow modeling library.
+Auditable, self-documenting cashflow model framework.
 ```
 docker compose run --rm dev
 python src/cashflow/run.py
