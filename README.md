@@ -1,10 +1,10 @@
 # cashflow
 
 Auditable, content-addressed cashflow modeling library.
-
+```
 docker compose run --rm dev
 python src/cashflow/run.py
-
+```
 Copy paste mermaid chart printed to stdout into mermaid.live, e.g. 
 ```
 flowchart LR
